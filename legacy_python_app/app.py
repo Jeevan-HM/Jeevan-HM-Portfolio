@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder="static")
 app.secret_key = os.environ.get(
-    "FLASK_SECRET_KEY", "dev-secret-key-change-in-production"
+    "FLASK_SECRET_KEY", "dev-secret-key-change-in-production",
 )
 CORS(app)
 app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
@@ -38,7 +38,8 @@ except (ValueError, RuntimeError, OSError):
 
 @app.route("/", methods=["GET"])
 def read_root() -> str:
-    """Render the main portfolio page.
+    """
+    Render the main portfolio page.
 
     Returns:
         Rendered HTML template for the portfolio homepage.
@@ -51,7 +52,8 @@ def read_root() -> str:
 
 @app.route("/chat", methods=["POST"])
 def chat_with_user():
-    """Handle chat requests from users.
+    """
+    Handle chat requests from users.
 
     Accepts a JSON payload with a "message" field, generates a response
     using the RAG chatbot, and returns the answer.

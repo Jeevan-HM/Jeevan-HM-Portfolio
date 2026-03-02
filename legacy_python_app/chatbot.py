@@ -99,7 +99,7 @@ class SimpleChatbot:
                             - Make conversations feel lively and dynamic - you're not a boring encyclopedia, you're an enthusiastic guide!
                             - Use personality, emojis (when appropriate), and conversational language to keep users interested.
                             - Be concise but captivating - every response should make users want to learn more.
-                        
+
                         # Chat Window Constraints
                             - The chat window is small (about 420px wide and 520px tall). Avoid large titles, oversized headings, or wide tables. Use short, concise headings (prefer h3 or h4), and keep all content compact and readable within a small chat window.
                             - Avoid long lines or wide blocks of text. Use lists and short paragraphs for clarity.
@@ -133,7 +133,7 @@ class SimpleChatbot:
                         # Stop Conditions
                             - Return the response only when you are confident that all parts of the user's question have been addressed engagingly, or when further information would require direct contact with Jeevan.
                             - If critical information is missing from context or requires extensive detail, create intrigue and suggest contacting Jeevan.
-                            
+
                         **Context about Jeevan:**
                         {bio_content}
 
@@ -162,7 +162,7 @@ class SimpleChatbot:
                 return response_content
             return str(response_content)
 
-        except (OSError, ValueError):
+        except Exception:
             logger.exception("Error during chat")
             return None
 
