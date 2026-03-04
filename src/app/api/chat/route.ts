@@ -24,14 +24,39 @@ async function loadBioFiles() {
 }
 
 export async function POST(req: NextRequest) {
+    const timestamp = new Date().toISOString();
+    const ip =
+        req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        req.headers.get("x-real-ip") ??
+        "unknown";
+    const userAgent = req.headers.get("user-agent") ?? "unknown";
+
     try {
         if (!apiKey || apiKey === "") {
+            console.log(JSON.stringify({
+                event: "chat_request",
+                status: "api_key_missing",
+                timestamp,
+                ip,
+                userAgent,
+            }));
             return NextResponse.json({
                 answer: "Hi there! I'm J.A.I.D. 👋<br/><br/>I am currently <b>offline</b> because my Google Gemini API Key has not been configured in the environment variables yet.<br/><br/>Please set <code>GOOGLE_API_KEY</code> to enable my AI capabilities!"
             }, { status: 200 });
         }
+
         const body = await req.json();
         const { message } = body;
+
+        // ── Log incoming message ───────────────────────────────────────────────
+        console.log(JSON.stringify({
+            event: "chat_request",
+            status: "received",
+            timestamp,
+            ip,
+            userAgent,
+            message,
+        }));
 
         const bioContent = await loadBioFiles();
 
@@ -73,8 +98,27 @@ export async function POST(req: NextRequest) {
 
         text = text.replace(/^```html/i, "").replace(/```$/i, "").trim();
 
+        // ── Log successful response ────────────────────────────────────────────
+        console.log(JSON.stringify({
+            event: "chat_response",
+            status: "success",
+            timestamp: new Date().toISOString(),
+            ip,
+            message,
+            responseSnippet: text.replace(/<[^>]*>/g, "").slice(0, 200),
+        }));
+
         return NextResponse.json({ answer: text });
     } catch (err: any) {
+        // ── Log errors ────────────────────────────────────────────────────────
+        console.error(JSON.stringify({
+            event: "chat_error",
+            status: "error",
+            timestamp: new Date().toISOString(),
+            ip,
+            userAgent,
+            error: err.message,
+        }));
         return NextResponse.json({ error: err.message, answer: "I'm having trouble connecting right now." }, { status: 500 });
     }
 }
